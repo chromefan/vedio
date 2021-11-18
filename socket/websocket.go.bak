@@ -1,0 +1,67 @@
+package main
+
+import (
+	"encoding/base64"
+	"flag"
+	"fmt"
+	"github.com/gorilla/websocket"
+	"log"
+	"net/http"
+	"os"
+	"time"
+)
+
+var addr = flag.String("addr", "127.0.0.1:8089", "http service address")
+
+var upgrader = websocket.Upgrader{
+	CheckOrigin: func(r *http.Request) bool {
+		return true
+	},
+} // use default options
+
+func echo(w http.ResponseWriter, r *http.Request) {
+	c, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Print("upgrade:", err)
+		return
+	}
+	defer c.Close()
+	for {
+		_, message, err := c.ReadMessage()
+		if err != nil {
+			log.Println("read:", err)
+			break
+		}
+		//log.Printf("recv: %s", message)
+		filename := fmt.Sprintf("video-%d.jpg",time.Now().Unix())
+		appendToFile(filename,message)
+		//err = c.WriteMessage(mt, message)
+		if err != nil {
+			log.Println("write:", err)
+			break
+		}
+	}
+}
+
+func main() {
+	flag.Parse()
+	log.SetFlags(0)
+	http.HandleFunc("/ws", echo)
+	log.Fatal(http.ListenAndServe(*addr, nil))
+}
+
+// fileName:文件名字(带全路径)
+// content: 写入的内容
+func appendToFile(fileName string, content []byte) error {
+	// 以只写的模式，打开文件
+	f, err := os.Create(fileName)
+	if err != nil {
+		fmt.Println("cacheFileList.yml file create failed. err: " + err.Error())
+	} else {
+		add,_ := base64.StdEncoding.DecodeString(string(content))
+		_, err = f.Write(add)
+		fmt.Println(err)
+	}
+	defer f.Close()
+	return err
+}

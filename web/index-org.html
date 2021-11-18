@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<script src="https://cdn.jsdelivr.net/hls.js/latest/hls.min.js"></script>
+<body>
+<video id="video"></video>
+</body>
+<script>
+    if(Hls.isSupported()) {
+        var video = document.getElementById('video'); // 获取 video 标签
+        var hls = new Hls(); // 实例化 Hls 对象
+        hls.loadSource('http://localhost:8085/hls/live.m3u8'); // 传入路径
+        hls.attachMedia(video);
+        hls.on(Hls.Events.MANIFEST_PARSED,function() {
+            video.play(); // 调用播放 API
+        });
+    }
+</script>
+</html>

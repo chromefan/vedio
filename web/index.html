@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://web.sdk.qcloud.com/player/tcplayerlite/release/v2.4.1/TcPlayer-2.4.1.js" charset="utf-8"></script>;
+</head>
+<body>
+<div id="id_test_video" style="width:100%; height:auto;"></div>
+
+</body>
+<script>
+    var player = new TcPlayer('id_test_video', {
+        "m3u8": "http://localhost:8085/hls/live.m3u8", //请替换成实际可用的播放地址
+        "autoplay" : true,      //iOS 下 safari 浏览器，以及大部分移动端浏览器是不开放视频自动播放这个能力的
+        "poster" : "",
+        "width" :  '1024',//视频的显示宽度，请尽量使用视频分辨率宽度
+        "height" : '800'//视频的显示高度，请尽量使用视频分辨率高度
+    });
+</script>
+</html>
